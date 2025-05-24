@@ -1,7 +1,66 @@
-import React from "react";
+import React, { useState } from "react";
 import { Package } from "lucide-react";
 
 const ProductHeader = () => {
+  const [activeForm, setActiveForm] = useState(null);
+  const [products, setProducts] = useState([
+    { id: 1, name: "", price: 0, quantity: 0, description: "" },
+  ]);
+
+  const handleButtonClick = (formType) => {
+    setActiveForm(formType === activeForm ? null : formType);
+    if (formType === "import") {
+      setProducts([
+        { id: 1, name: "", price: 0, quantity: 0, description: "" },
+      ]);
+    }
+  };
+
+  const handleSubmit = (type) => {
+    console.log(`Submitting ${type} form data`);
+    alert(
+      `Đã lưu thành công phiếu ${
+        type === "import"
+          ? "nhập kho"
+          : type === "export"
+          ? "xuất kho"
+          : "kiểm kê"
+      }`
+    );
+    setActiveForm(null);
+  };
+
+  const handleCancel = () => {
+    setActiveForm(null);
+    setProducts([{ id: 1, name: "", price: 0, quantity: 0, description: "" }]);
+  };
+
+  const addProduct = () => {
+    const newProduct = {
+      id: products.length + 1,
+      name: "",
+      quantity: 0,
+      price: 0,
+      description: "",
+      category: "",
+    };
+    setProducts([...products, newProduct]);
+  };
+
+  const updateProduct = (id, field, value) => {
+    const updatedProducts = products.map((product) =>
+      product.id === id ? { ...product, [field]: value } : product
+    );
+    setProducts(updatedProducts);
+  };
+
+  const calculateTotal = () => {
+    return products.reduce(
+      (sum, product) => sum + product.quantity * product.price,
+      0
+    );
+  };
+
   return (
     <div className="mb-8">
       <div className="flex items-center gap-3 mb-2">
@@ -124,11 +183,11 @@ const ProductHeader = () => {
                             <input
                               type="text"
                               className="w-full p-1 border border-gray-300"
-                              value={product.productName}
+                              value={product.name}
                               onChange={(e) =>
                                 updateProduct(
                                   product.id,
-                                  "Tên Sản Phẩm",
+                                  "name",
                                   e.target.value
                                 )
                               }
@@ -142,7 +201,7 @@ const ProductHeader = () => {
                               onChange={(e) =>
                                 updateProduct(
                                   product.id,
-                                  "Giá",
+                                  "price",
                                   Number(e.target.value)
                                 )
                               }
@@ -152,11 +211,11 @@ const ProductHeader = () => {
                             <input
                               type="number"
                               className="w-full p-1 border border-gray-300"
-                              value={product.stock}
+                              value={product.quantity}
                               onChange={(e) =>
                                 updateProduct(
                                   product.id,
-                                  "Tồn Kho",
+                                  "quantity",
                                   Number(e.target.value)
                                 )
                               }
@@ -170,7 +229,7 @@ const ProductHeader = () => {
                               onChange={(e) =>
                                 updateProduct(
                                   product.id,
-                                  "Mô tả",
+                                  "description",
                                   e.target.value
                                 )
                               }
